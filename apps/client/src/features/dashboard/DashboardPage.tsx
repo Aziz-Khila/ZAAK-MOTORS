@@ -1,41 +1,11 @@
 import type { ReactNode } from "react";
 import { Link } from "react-router";
-import {
-  ArrowRight,
-  CalendarDays,
-  Cog,
-  Disc3,
-  Droplets,
-  FileText,
-  Mail,
-  MapPin,
-  MoveVertical,
-  Phone,
-  Receipt,
-  ScanLine,
-  Settings2,
-  Sparkles,
-  Users,
-  Wallet,
-  Wrench,
-  type LucideIcon,
-} from "lucide-react";
-import { formatMoney, lineTotal, today, type Appointment, type Dashboard, type ServiceTemplate } from "@garage/shared";
+import { CalendarDays, FileText, Mail, MapPin, Phone, Receipt, Users, Wallet } from "lucide-react";
+import { formatMoney, today, type Appointment, type Dashboard } from "@garage/shared";
 import { useApi, useSettings } from "../../api";
 import { SummaryTile } from "../../components/tiles";
 import { RemindersPanel } from "../agenda/RemindersPanel";
-import { EmptyState, cn } from "../../components/ui";
-
-const CATEGORY_ICONS: Record<string, LucideIcon> = {
-  entretien: Droplets,
-  freinage: Disc3,
-  moteur: Cog,
-  transmission: Settings2,
-  suspension: MoveVertical,
-  diagnostic: ScanLine,
-};
-
-const categoryIcon = (category: string) => CATEGORY_ICONS[category.trim().toLowerCase()] ?? Wrench;
+import { cn } from "../../components/ui";
 
 const todayLabel = () => {
   const s = new Date().toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
@@ -72,49 +42,15 @@ function ContactChip({ icon, children, href }: { icon: ReactNode; children: Reac
   );
 }
 
-function ServiceCategory({ category, services }: { category: string; services: ServiceTemplate[] }) {
-  const Icon = categoryIcon(category);
-  return (
-    <section className="flex flex-col rounded-2xl border border-slate-200 bg-white shadow-sm">
-      <header className="flex items-center gap-3 border-b border-slate-100 px-5 py-4">
-        <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-slate-900 text-white">
-          <Icon className="size-5" />
-        </span>
-        <div className="min-w-0 flex-1">
-          <h3 className="truncate font-bold text-slate-900">{category}</h3>
-          <p className="text-xs text-slate-500">
-            {services.length} prestation{services.length > 1 ? "s" : ""}
-          </p>
-        </div>
-      </header>
-      <ul className="divide-y divide-slate-100 px-5">
-        {services.map((s) => (
-          <li key={s.id} className="flex items-center justify-between gap-3 py-3">
-            <span className="min-w-0 truncate text-slate-700">{s.name}</span>
-            <span className="shrink-0 text-sm font-semibold tabular-nums text-slate-900">{formatMoney(s.lines.reduce((sum, l) => sum + lineTotal(l), 0))}</span>
-          </li>
-        ))}
-      </ul>
-    </section>
-  );
-}
-
-/** Page d'accueil : vitrine du garage (logo, coordonnées, services) et accès rapides. */
+/** Page d'accueil : vitrine du garage (logo, coordonnées) et accès rapides. */
 export function DashboardPage() {
   const { data: settings } = useSettings();
-  const { data: templates } = useApi<ServiceTemplate[]>("/api/templates");
   const { data: dash } = useApi<Dashboard>("/api/dashboard", { refetchInterval: 60000 });
   const { data: allToday } = useApi<Appointment[]>(`/api/appointments?from=${today()}&to=${today()}`);
   const todayAppointments = allToday?.filter((a) => !a.done);
   const nowTime = new Date().toTimeString().slice(0, 5);
   const nextAppointment = todayAppointments?.find((a) => a.time >= nowTime) ?? todayAppointments?.find((a) => !a.time);
   const name = settings?.garageName || "ZAAK MOTORS";
-
-  const categories = new Map<string, ServiceTemplate[]>();
-  for (const t of templates ?? []) {
-    const key = t.category.trim() || "Autres";
-    categories.set(key, [...(categories.get(key) ?? []), t]);
-  }
   const hasContact = !!(settings?.address || settings?.phone || settings?.email);
 
   return (
@@ -206,29 +142,6 @@ export function DashboardPage() {
           </div>
         </section>
       )}
-
-      <section>
-        <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
-          <div>
-            <h2 className="text-xl font-bold text-slate-900">Nos services</h2>
-            <p className="text-sm text-slate-500">Prestations proposées par le garage · prix indicatifs hors taxes</p>
-          </div>
-          <Link to="/parametres" className="inline-flex items-center gap-1.5 text-sm font-semibold text-blue-700 hover:underline">
-            Gérer les prestations <ArrowRight className="size-4" />
-          </Link>
-        </div>
-        {templates && templates.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-slate-300 bg-white">
-            <EmptyState icon={<Sparkles className="size-6" />}>Aucune prestation : ajoutez-les dans Paramètres → Prestations fréquentes.</EmptyState>
-          </div>
-        ) : (
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-            {[...categories].map(([category, services]) => (
-              <ServiceCategory key={category} category={category} services={services} />
-            ))}
-          </div>
-        )}
-      </section>
     </div>
   );
 }

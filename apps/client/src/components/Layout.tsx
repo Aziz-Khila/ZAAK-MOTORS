@@ -30,7 +30,6 @@ const COLLAPSED_KEY = "sidebar.collapsed";
 
 const NAV_MAIN: NavEntry[] = [
   { to: "/", label: "Accueil", icon: House, end: true },
-  { to: "/agenda", label: "Agenda", icon: CalendarDays },
   { to: "/clients", label: "Clients", icon: Users },
   { to: "/vehicules", label: "Véhicules", icon: Car },
   { to: "/devis", label: "Devis", icon: FileText },
@@ -39,6 +38,7 @@ const NAV_MAIN: NavEntry[] = [
 ];
 
 const NAV_ADMIN: NavEntry[] = [
+  { to: "/agenda", label: "Agenda", icon: CalendarDays },
   { to: "/comptabilite", label: "Comptabilité", icon: Calculator },
   { to: "/rentabilite", label: "Rentabilité", icon: ChartNoAxesCombined },
   { to: "/parametres", label: "Paramètres", icon: Settings },
@@ -99,7 +99,7 @@ function NavItems({ onNavigate, mode, alerts }: { onNavigate?: () => void; mode:
         ) : (
           <div className="mb-2 px-3 text-[10px] font-semibold uppercase tracking-[0.2em] text-neutral-500">Gestion</div>
         )}
-        <NavGroup items={NAV_ADMIN} onNavigate={onNavigate} mode={mode} />
+        <NavGroup items={NAV_ADMIN} onNavigate={onNavigate} mode={mode} alerts={alerts} />
       </div>
     </div>
   );
