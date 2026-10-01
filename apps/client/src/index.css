@@ -1,0 +1,75 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Segoe UI", system-ui, -apple-system, Roboto, "Helvetica Neue", Arial, sans-serif;
+
+  /* Charte Mercedes-Benz : accent gris argent de l'étoile (600 assez foncé pour un texte blanc) */
+  --color-blue-50: #f3f5f6;
+  --color-blue-100: #e6eaec;
+  --color-blue-200: #d0d6da;
+  --color-blue-300: #b3bcc2;
+  --color-blue-400: #8f9aa2;
+  --color-blue-500: #717d86;
+  --color-blue-600: #5b6770;
+  --color-blue-700: #4a545c;
+  --color-blue-800: #3b444b;
+  --color-blue-900: #2e353b;
+  --color-blue-950: #1d2226;
+
+  /* Gris argent neutres (noir, argent, blanc) */
+  --color-slate-50: #f8f8f8;
+  --color-slate-100: #f2f2f2;
+  --color-slate-200: #e5e5e5;
+  --color-slate-300: #d1d1d1;
+  --color-slate-400: #a4a4a4;
+  --color-slate-500: #767676;
+  --color-slate-600: #5c5c5c;
+  --color-slate-700: #424242;
+  --color-slate-800: #262626;
+  --color-slate-900: #141414;
+  --color-slate-950: #0a0a0a;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  @apply bg-slate-100 text-slate-900 antialiased;
+  -webkit-tap-highlight-color: transparent;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.no-scrollbar {
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.print-only {
+  display: none;
+}
+
+@media print {
+  @page {
+    size: A4;
+    margin: 12mm;
+  }
+  body {
+    background: white;
+  }
+  .no-print {
+    display: none !important;
+  }
+  .print-only {
+    display: block;
+  }
+}
